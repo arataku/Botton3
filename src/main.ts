@@ -1,11 +1,8 @@
 import {
 	Client,
-	DiscordAPIError,
-	GuildManager,
 	GuildMember,
 	Intents,
 	Message,
-	User,
 	MessageButton,
 	MessageActionRow,
 } from "discord.js";
@@ -16,9 +13,9 @@ import {
 	VoiceReceiver,
 	EndBehaviorType,
 } from "@discordjs/voice";
-import * as fs from "fs";
 import prism from "prism-media";
 import { set, read } from "./setting";
+import { average } from "./Utls";
 
 const client = new Client({
 	intents: [
@@ -32,14 +29,6 @@ const TOKEN: string = process.env.AraBot3Token;
 
 async function sleep(waitTime: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, waitTime));
-}
-
-function average(array: Array<number>) {
-	let sum = 0;
-	for (let value of array) {
-		sum += value;
-	}
-	return sum / array.length;
 }
 
 client.on("ready", () => {
