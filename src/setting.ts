@@ -1,6 +1,6 @@
 var fs = require("fs");
 
-export function set(keys: string[], value: string) {
+export function settingSet(keys: string[], value: string) {
 	const json = require("./setting.json");
 	let tmp = json;
 
@@ -16,7 +16,7 @@ export function set(keys: string[], value: string) {
 	fs.writeFileSync("./setting.json", JSON.stringify(json));
 }
 
-export function read(keys: string[]) {
+export function settingRead(keys: string[]) {
 	const json = require("./setting.json");
 	let tmp = json;
 	for (let i = 0; i < keys.length - 1; i++) {

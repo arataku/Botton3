@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import { VoiceReceiver, EndBehaviorType } from "@discordjs/voice";
 import prism from "prism-media";
-import { read } from "./setting";
+import { settingRead } from "./setting";
 import { average } from "./Utls";
 
 export class EachUsersVoice {
@@ -70,13 +70,20 @@ export class EachUsersVoice {
 			if (this.warnPoint > 100) {
 				this.warnPoint = 0;
 				console.log(
-					read([this.member.guild.id, "manually_mute_set", this.member.id])
+					settingRead([
+						this.member.guild.id,
+						"manually_mute_set",
+						this.member.id,
+					])
 				);
 				if (
 					!(
 						this.member.voice.mute ||
-						read([this.member.guild.id, "manually_mute_set", this.member.id]) ==
-							"true"
+						settingRead([
+							this.member.guild.id,
+							"manually_mute_set",
+							this.member.id,
+						]) == "true"
 					)
 				) {
 					const unmuteId =
@@ -95,7 +102,7 @@ export class EachUsersVoice {
 					});
 
 					let tmp = this.member.client.channels.cache.get(
-						read([
+						settingRead([
 							this.member.voice.channel.id,
 							"big_voice_troll_mute",
 							"text_channel_id",
