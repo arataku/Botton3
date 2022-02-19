@@ -12,7 +12,6 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\src\\main.js",
-            "outFiles": ["${workspaceFolder}\\src\\main.js"],
             "preLaunchTask": "build",
             "console": "integratedTerminal"
         }
