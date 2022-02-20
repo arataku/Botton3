@@ -4,10 +4,11 @@ import {
 	createAudioResource,
 	createAudioPlayer,
 } from "@discordjs/voice";
-import { settingRead } from "../setting";
+import { settingRead, tcConnectedVcIs } from "../setting";
 import { EachUsersVoice } from "../EachUsersVoice";
 
 export async function ara_join(message: Message, client: Client<boolean>) {
+	if (message.content != "ara.join") return;
 	if (!message.member.voice.channel) {
 		message.channel.send("ボイスチャンネルに接続してください");
 	} else {
@@ -36,13 +37,7 @@ export async function ara_join(message: Message, client: Client<boolean>) {
 			}
 			(await msg).reply(
 				"#" +
-					message.guild.channels.cache.get(
-						settingRead([
-							message.member.voice.channel.id,
-							"big_voice_troll_mute",
-							"text_channel_id",
-						])
-					).name +
+					tcConnectedVcIs(message.member.voice.channel).name +
 					" の大音量荒らし対策が有効になっています"
 			);
 		}
