@@ -5,6 +5,8 @@ import { settingRead, tcConnectedVcIs } from "./setting";
 import { average } from "./Utls";
 import { AddButton } from "./MessageUtl";
 
+// manage the voice receiver of members.
+// メンバーのvoice receiverを管理する。
 export class EachUsersVoice {
 	private client: Client<boolean>;
 	private receiver: VoiceReceiver;
@@ -24,27 +26,40 @@ export class EachUsersVoice {
 		this.voiceStackData = [];
 		this.warnPoint = 0;
 
+		//prepare opus stream.
+		//opus streamを準備する。
 		const audioReceiveStream = this.receiver.subscribe(this.member.id, {
 			end: {
 				behavior: EndBehaviorType.Manual,
 			},
 		});
 
+		//convert opus stream to PCM stream.
+		//opus streamをPCM streamに変換する。
+		// prepare the decoder.
+		// デコーダーを準備する。
 		const Decoder = new prism.opus.Decoder({
 			rate: 48000,
 			channels: 2,
 			frameSize: 960,
 		});
-
+		// send PCM stream to the decoder.
+		// PCM streamをデコーダーに送信する。
 		audioReceiveStream.on("data", (chunk) => {
 			Decoder.write(chunk);
 		});
+		// check loudness.
+		// 音量をチェックする。
 		Decoder.on("data", async (chunk) => {
 			let tmp = [];
+			// convert PCM stream to float array.
+			// PCM streamをfloat arrayに変換する。
 			for (let i = 0; i < (chunk.length - 1) / 2; i += 2) {
 				tmp.push(chunk.readInt16LE(i * 2));
 			}
 			this.voiceStackData.push(...tmp);
+			// remove data from stack if the stack is over 10000.
+			// stackが10000を超えたらデータを削除する。
 			while (this.voiceStackData.length > 10000) {
 				this.voiceStackData.shift();
 			}
@@ -55,12 +70,18 @@ export class EachUsersVoice {
 	public getLoudness(): number {
 		let tmp = [];
 		for (let value of this.voiceStackData) {
+			// convert to absolute value.
+			// 絶対値に変換する。
 			tmp.push(Math.abs(value));
 		}
+		// calculate average.
+		// 平均を計算する。
 		this.loudness = average(tmp);
 		return this.loudness;
 	}
 	public async checkLoudness(): Promise<void> {
+		// if the loudness is over the 10000 and it prolong, mute the member.
+		// 音量が10000を超えていて、持続している場合、メンバーをミュートする。
 		if (this.loudness > 10000) {
 			this.warnPoint++;
 			if (this.warnPoint > 100) {
@@ -94,6 +115,8 @@ export class EachUsersVoice {
 						message.reply("サーバーミュートを解除しました。");
 					});
 					const tmp = tcConnectedVcIs(this.member.voice.channel);
+					// when the member was muted, send a message to the channel.
+					// メンバーがミュートされた場合、チャンネルにメッセージを送信する。
 					if (tmp != null) {
 						tmp.send(
 							this.member.toString() +

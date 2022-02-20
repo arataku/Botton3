@@ -32,6 +32,8 @@ client.on("messageCreate", async (message) => {
 	}
 });
 
+// observe server mute change, and append the user to the white list.
+// server muteが切り替わったユーザーを検知し、そのユーザーをホワイトリストに追加する。
 client.on("voiceStateUpdate", async (oldState, newState) => {
 	if (
 		oldState.mute != newState.mute &&
@@ -44,4 +46,6 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 	}
 });
 
+//login
+//ログイン
 client.login(TOKEN);
