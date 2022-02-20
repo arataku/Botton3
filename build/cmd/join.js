@@ -5,6 +5,8 @@ const voice_1 = require("@discordjs/voice");
 const setting_1 = require("../setting");
 const EachUsersVoice_1 = require("../EachUsersVoice");
 async function ara_join(message, client) {
+    if (message.content != "ara.join")
+        return;
     if (!message.member.voice.channel) {
         message.channel.send("ボイスチャンネルに接続してください");
     }

@@ -1,13 +1,9 @@
-import {
-	Client,
-	GuildMember,
-	MessageButton,
-	MessageActionRow,
-} from "discord.js";
+import { Client, GuildMember, TextChannel } from "discord.js";
 import { VoiceReceiver, EndBehaviorType } from "@discordjs/voice";
 import prism from "prism-media";
-import { settingRead } from "./setting";
+import { settingRead, tcConnectedVcIs } from "./setting";
 import { average } from "./Utls";
+import { AddButton } from "./MessageUtl";
 
 export class EachUsersVoice {
 	private client: Client<boolean>;
@@ -43,7 +39,7 @@ export class EachUsersVoice {
 		audioReceiveStream.on("data", (chunk) => {
 			Decoder.write(chunk);
 		});
-		Decoder.on("data", (chunk) => {
+		Decoder.on("data", async (chunk) => {
 			let tmp = [];
 			for (let i = 0; i < (chunk.length - 1) / 2; i += 2) {
 				tmp.push(chunk.readInt16LE(i * 2));
@@ -53,7 +49,7 @@ export class EachUsersVoice {
 				this.voiceStackData.shift();
 			}
 			this.getLoudness();
-			this.checkLoudness();
+			await this.checkLoudness();
 		});
 	}
 	public getLoudness(): number {
@@ -64,7 +60,7 @@ export class EachUsersVoice {
 		this.loudness = average(tmp);
 		return this.loudness;
 	}
-	public checkLoudness(): void {
+	public async checkLoudness(): Promise<void> {
 		if (this.loudness > 10000) {
 			this.warnPoint++;
 			if (this.warnPoint > 100) {
@@ -86,48 +82,24 @@ export class EachUsersVoice {
 						]) == "true"
 					)
 				) {
-					const unmuteId =
-						"unmute" +
-						this.member.id.toString() +
-						new Date().getTime().toString();
-					const btn = new MessageButton()
-						.setCustomId(unmuteId)
-						.setStyle("PRIMARY")
-						.setLabel("サーバーミュート解除");
 					this.member.voice.setMute(true);
-					const warn_msg = this.member.send({
-						content:
-							"声が大きいため、スパムの可能性があるとしてサーバーミュートしました。解除するには下のボタンを押してください。",
-						components: [new MessageActionRow().addComponents(btn)],
-					});
-
-					let tmp = this.member.client.channels.cache.get(
-						settingRead([
-							this.member.voice.channel.id,
-							"big_voice_troll_mute",
-							"text_channel_id",
-						])
+					const warn_msg = await this.member.send(
+						[
+							"声が大きいため、スパムの可能性があるとしてサーバーミュートしました。",
+							"解除するには下のボタンを押してください。",
+						].join("\n")
 					);
-					if (tmp.type == "GUILD_TEXT") {
+					AddButton(warn_msg, this.client, "解除", (message) => {
+						this.member.voice.setMute(false);
+						message.reply("サーバーミュートを解除しました。");
+					});
+					const tmp = tcConnectedVcIs(this.member.voice.channel);
+					if (tmp != null) {
 						tmp.send(
 							this.member.toString() +
-								"さんが、スパムもしくは過剰に大きい声で話したのでサーバーミュートされました。"
+								"さんが、過剰に大きい声で話したのでサーバーミュートしました。"
 						);
 					}
-					this.client.on("interactionCreate", async (interaction) => {
-						if (interaction.isButton()) {
-							if (interaction.customId === unmuteId) {
-								console.log("interaction:" + interaction.customId);
-								this.member.voice.setMute(false);
-								interaction.update({
-									components: [
-										new MessageActionRow().addComponents(btn.setDisabled()),
-									],
-								});
-								(await warn_msg).reply("サーバーミュートを解除しました。");
-							}
-						}
-					});
 				}
 			}
 		} else if (this.warnPoint > 0) {

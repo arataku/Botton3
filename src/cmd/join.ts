@@ -8,6 +8,7 @@ import { settingRead } from "../setting";
 import { EachUsersVoice } from "../EachUsersVoice";
 
 export async function ara_join(message: Message, client: Client<boolean>) {
+	if (message.content != "ara.join") return;
 	if (!message.member.voice.channel) {
 		message.channel.send("ボイスチャンネルに接続してください");
 	} else {

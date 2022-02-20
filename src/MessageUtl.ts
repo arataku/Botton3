@@ -10,7 +10,7 @@ export async function AddButton(
 	message: Message,
 	client: Client<boolean>,
 	label: string,
-	clicked: (message: Message) => {},
+	clicked: (message: Message) => void,
 	style: MessageButtonStyleResolvable = "PRIMARY",
 	customId: string = message.id.toString() + new Date().getTime().toString()
 ) {

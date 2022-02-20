@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.settingRead = exports.settingSet = void 0;
 var fs = require("fs");
 function settingSet(keys, value) {
-    const json = require("./setting.json");
+    const json = require("../setting.json");
     let tmp = json;
     for (let i = 0; i < keys.length - 1; i++) {
         if (keys[i] in tmp) {
@@ -15,11 +15,11 @@ function settingSet(keys, value) {
         }
     }
     tmp[keys[keys.length - 1]] = value;
-    fs.writeFileSync("./setting.json", JSON.stringify(json));
+    fs.writeFileSync("../setting.json", JSON.stringify(json));
 }
 exports.settingSet = settingSet;
 function settingRead(keys) {
-    const json = require("./setting.json");
+    const json = require("../setting.json");
     let tmp = json;
     for (let i = 0; i < keys.length - 1; i++) {
         if (keys[i] in tmp) {
