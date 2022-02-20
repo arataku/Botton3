@@ -7,10 +7,14 @@ export async function ara_big_voice_troll_mute(
 	client: Client<boolean>
 ) {
 	if (message.content != "ara.big_voice_troll_mute") return;
+	// User should have permission to manage channels role.
+	// ユーザーはチャンネルのロールを管理する権限を持っている必要があります。
 	if (!message.member.permissions.has("MANAGE_CHANNELS")) {
 		message.channel.send(
 			"チャンネル管理権限がないユーザーはこのコマンドは使用できません。"
 		);
+		// User should be in a voice channel.
+		// ユーザーはボイスチャンネルにいる必要があります。
 	} else if (!message.member.voice.channel) {
 		message.channel.send("ボイスチャンネルに接続してください");
 	} else {
@@ -24,6 +28,8 @@ export async function ara_big_voice_troll_mute(
 			].join("\n")
 		);
 		AddButton(msg, client, "Enable", (msg) => {
+			// Enable big voice troll mute.
+			// big voice troll muteを有効にする。
 			const channelId = message.member.voice.channel.id;
 			settingSet([channelId, "big_voice_troll_mute", "enable"], "true");
 			settingSet(
