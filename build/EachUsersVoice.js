@@ -56,10 +56,17 @@ class EachUsersVoice {
             this.warnPoint++;
             if (this.warnPoint > 100) {
                 this.warnPoint = 0;
-                console.log((0, setting_1.read)([this.member.guild.id, "manually_mute_set", this.member.id]));
+                console.log((0, setting_1.settingRead)([
+                    this.member.guild.id,
+                    "manually_mute_set",
+                    this.member.id,
+                ]));
                 if (!(this.member.voice.mute ||
-                    (0, setting_1.read)([this.member.guild.id, "manually_mute_set", this.member.id]) ==
-                        "true")) {
+                    (0, setting_1.settingRead)([
+                        this.member.guild.id,
+                        "manually_mute_set",
+                        this.member.id,
+                    ]) == "true")) {
                     const unmuteId = "unmute" +
                         this.member.id.toString() +
                         new Date().getTime().toString();
@@ -72,7 +79,7 @@ class EachUsersVoice {
                         content: "声が大きいため、スパムの可能性があるとしてサーバーミュートしました。解除するには下のボタンを押してください。",
                         components: [new discord_js_1.MessageActionRow().addComponents(btn)],
                     });
-                    let tmp = this.member.client.channels.cache.get((0, setting_1.read)([
+                    let tmp = this.member.client.channels.cache.get((0, setting_1.settingRead)([
                         this.member.voice.channel.id,
                         "big_voice_troll_mute",
                         "text_channel_id",
