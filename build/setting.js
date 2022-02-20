@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.settingRead = exports.settingSet = void 0;
+exports.tcConnectedVcIs = exports.settingRead = exports.settingSet = void 0;
 var fs = require("fs");
 function settingSet(keys, value) {
     const json = require("../setting.json");
@@ -38,4 +38,13 @@ function settingRead(keys) {
     }
 }
 exports.settingRead = settingRead;
+function tcConnectedVcIs(vc) {
+    let tmp = settingRead([vc.id, "big_voice_troll_mute", "text_channel_id"]);
+    tmp = vc.client.channels.cache.get(tmp);
+    if ((tmp.type = "GUILD_TEXT")) {
+        return tmp;
+    }
+    return null;
+}
+exports.tcConnectedVcIs = tcConnectedVcIs;
 //# sourceMappingURL=setting.js.map
